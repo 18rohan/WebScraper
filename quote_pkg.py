@@ -62,8 +62,10 @@ def get_author_links(url):
 
     return author_links
 
-def get_author_birthdate():
+def get_author_birthdate(all_author_urls):
     author_birthdates = []
+    author_birthplaces = []
+    author_info = {}
     for author_url_single in all_author_urls:
         source_author = urllib.request.urlopen(author_url_single).read()
         soup = bs.BeautifulSoup(source_author, 'html.parser')
@@ -71,36 +73,54 @@ def get_author_birthdate():
         for author in data_author:
             birthdate = author.find_all('span',class_='author-born-date')
             for i in birthdate:
-                author_birthdates.append(i)
-    return author_birthdates
+                author_birthdates.append(i.text)
+        for author in data_author:
+            birthplace = author.find_all('span', class_='author-born-location')
+            for j in birthplace:
+                author_birthplaces.append(j.text)
+
+                author_info = {
+                'birthdate':author_birthdates,
+                'birthplace':author_birthplaces
+                }
+    return author_birthdates, author_birthplaces
+
+
 
 
 
 #Main function
-all_quotes = []
-all_authors3 = []
-urls = get_urls(soup)
-for url1 in urls:
-   # print(url1)
-    author_names,quote_l = quotes(url1)
-    for author in author_names:
-        all_authors3.append(author)
-   # print(quote_l)
-    next_page = soup.select('li.next > a')
-    if not next_page or not next_page[0].get('href'):
-        break
-    url1 = url1 + next_page[0].get('href').lstrip('/')
-   # print(url1)
-    all_quotes.append(quote_l)
-    #print(len(all_quotes))
-new_list = []
-for i in all_quotes:
-    for j in i:
-        new_list.append(j)
-quotes_to_scrap = pd.DataFrame()
-quotes_to_scrap['Quotes'] = new_list
-quotes_to_scrap['Author'] = all_authors3
-print(quotes_to_scrap)
+#all_authors3 = []
+#urls = get_urls(soup)
+#for url1 in urls:
+#    # print(url1)
+#    author_names,quote_l = quotes(url1)
+#    all_quotes = []
+#    all_author_urls = get_author_links(url1)
+#    for j in all_author_urls:
+#        final_url = base_url + j.lstrip('/')
+#        all_author_urls.append(final_url)
+#    author_birthdate, author_birthplace = get_author_birthdate()
+#    for author in author_names:
+#        all_authors3.append(author)
+#    # print(quote_l)
+#    next_page = soup.select('li.next > a')
+#    if not next_page or not next_page[0].get('href'):
+#        break
+#    url1 = url1 + next_page[0].get('href').lstrip('/')
+#    # print(url1)
+#    all_quotes.append(quote_l)
+#    #print(len(all_quotes))
+#new_list = []
+#for i in all_quotes:
+#    for j in i:
+#        new_list.append(j)
+#quotes_to_scrap = pd.DataFrame()
+#quotes_to_scrap['Quotes'] = new_list
+#quotes_to_scrap['Author'] = all_authors3
+#quotes_to_scrap['Author_birthdate'] = author_birthdate
+#quotes_to_scrap['Author_birthplace'] = author_birthplace
+#print(quotes_to_scrap)
 
 
 
